@@ -208,8 +208,9 @@ if [ $TOTAL_CONFLICTS -gt 0 ]; then
         echo -e "  ${GREEN}[A]${NC} Accept all (merge directories, overwrite files)"
         echo -e "  ${RED}[D]${NC} Decline all (skip everything with conflicts)"
         echo -e "  ${CYAN}[I]${NC} Individual review (prompt for each item)"
+        echo -e "  ${MAGENTA}[C]${NC} Cancel deployment (abort and exit)"
         echo ""
-        read -p "Choice [A/d/i]: " -n 1 -r APPROVAL_CHOICE
+        read -p "Choice [A/d/i/c]: " -n 1 -r APPROVAL_CHOICE
         echo ""
         echo ""
 
@@ -233,6 +234,17 @@ if [ $TOTAL_CONFLICTS -gt 0 ]; then
                 echo -e "${CYAN}→ Individual review mode${NC}"
                 INDIVIDUAL_REVIEW=true
                 SKIP_ALL=false
+                ;;
+            [Cc]* )
+                echo -e "${MAGENTA}✗ Deployment cancelled by user${NC}"
+                echo ""
+                echo -e "${YELLOW}No changes were made.${NC}"
+                if [ "$SKIP_BACKUP" = false ] && [ -d "$BACKUP_DIR" ]; then
+                    echo -e "${YELLOW}Removing empty backup directory...${NC}"
+                    rm -rf "$BACKUP_DIR"
+                fi
+                echo ""
+                exit 0
                 ;;
             * )
                 echo -e "${GREEN}✓ Accepting all conflicts (default)${NC}"
